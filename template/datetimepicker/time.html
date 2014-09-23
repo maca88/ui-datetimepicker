@@ -18,11 +18,11 @@
         </tr>
         <tr>
             <td style="width:50px;"  class="form-group" ng-class="{'has-error': time.invalidHours}">
-                <input type="text" ng-model="time.hours" data-part="hour" ng-change="time.updateHours()" class="form-control text-center" ng-mousewheel="time.incrementHours()" ng-readonly="time.readonlyInput" maxlength="2">
+                <input style="width:50px;" type="text" ng-model="time.hours" data-part="hour" ng-change="time.updateHours()" class="form-control text-center" ng-mousewheel="time.incrementHours()" ng-readonly="time.readonlyInput" maxlength="2">
             </td>
             <td style="width:50px;">:</td>
             <td style="width:50px;" class="form-group" ng-class="{'has-error': time.invalidMinutes}">
-                <input type="text" ng-model="time.minutes" data-part="minute" ng-change="time.updateMinutes()" class="form-control text-center" ng-readonly="time.readonlyInput" maxlength="2">
+                <input style="width:50px;" type="text" ng-model="time.minutes" data-part="minute" ng-change="time.updateMinutes()" class="form-control text-center" ng-readonly="time.readonlyInput" maxlength="2">
             </td>
             <td style="width:20px;">&nbsp;</td>
             <td style="width:50px;" ng-show="time.showMeridian" ><button type="button" class="btn btn-primary text-center" ng-click="time.toggleMeridian()">{{time.meridian}}</button></td>

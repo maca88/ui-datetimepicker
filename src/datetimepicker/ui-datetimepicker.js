@@ -448,14 +448,15 @@
             }
         };
     })
-    .directive('dtTimepicker', [
-        function() {
+    .directive('dtTimepicker', ['$timeout',
+        function($timeout) {
             return {
                 restrict: 'EA',
                 require: '^datetimepicker',
                 replace: true,
                 templateUrl: 'template/datetimepicker/time.html',
                 link: function(scope, element, attrs, ctrl) {
+                    var inputs = element.find('input');
                     ctrl.step = {};
                     ctrl.element = element;
 
@@ -469,6 +470,15 @@
 
                     ctrl.handleKeyDown = function(key, evt) {
                         if (evt.target.nodeName.toLowerCase() !== 'input') {
+                            if (key == 'left') {
+                                $timeout(function() {
+                                    inputs.last().focus();
+                                });
+                            } else if (key == 'right') {
+                                $timeout(function() {
+                                    inputs.first().focus();
+                                });
+                            }
                             return;
                         }
                         var input = $(evt.target);
@@ -485,9 +495,13 @@
                             } else {
                                 scope.time.decrementMinutes();
                             }
+                        } else if (key == 'left' || key == 'right') {
+                            $timeout(function() {
+                                inputs.not(evt.target).focus();
+                            });
                         }
                     };
-                    var inputs = element.find('input');
+                    
                     ctrl.initTime(inputs);
                     ctrl.refreshView();
                 }
@@ -524,7 +538,7 @@
     ])
     .constant('datetimepickerPopupConfig', {
         datetimepickerPopup: 'yyyy-MM-dd',
-        currentText: 'Today',
+        currentText: 'Current',
         clearText: 'Clear',
         closeText: 'Done',
         closeOnDateSelection: false,
@@ -532,8 +546,8 @@
         showButtonBar: true
     })
     .directive('datetimepickerPopup', [
-        '$compile', '$parse', '$document', '$position', 'dateFilter', 'dateParser', 'datetimepickerPopupConfig',
-        function($compile, $parse, $document, $position, dateFilter, dateParser, datetimepickerPopupConfig) {
+        '$compile', '$parse', '$document', '$position', '$timeout', 'dateFilter', 'dateParser', 'datetimepickerPopupConfig',
+        function($compile, $parse, $document, $position, $timeout, dateFilter, dateParser, datetimepickerPopupConfig) {
             return {
                 restrict: 'EA',
                 require: 'ngModel',
@@ -542,7 +556,8 @@
                     currentText: '@',
                     clearText: '@',
                     closeText: '@',
-                    dateDisabled: '&'
+                    dateDisabled: '&',
+                    openOnFocus: '@'
                 },
                 link: function(scope, element, attrs, ngModel) {
                     var dateFormat,
@@ -705,18 +720,36 @@
                         }
                     };
 
+                    var canOpenOnFocus = true;
+                    var focus = function(evt) {
+                        if (!canOpenOnFocus) {
+                            canOpenOnFocus = true;
+                            return;
+                        }
+                        $timeout(function() {
+                            scope.isOpen = true;
+                        });
+                    };
+
+                    if (scope.openOnFocus) {
+                        element.bind('focus', focus);
+                    }
+
                     var keydown = function(evt, noApply) {
                         scope.keydown(evt);
                     };
+
                     element.bind('keydown', keydown);
 
                     scope.keydown = function(evt) {
                         if (evt.which === 27) {
+                            canOpenOnFocus = false;
                             evt.preventDefault();
                             evt.stopPropagation();
                             scope.close();
                         } else if (evt.which === 40 && !scope.isOpen) {
                             scope.isOpen = true;
+                            evt.stopPropagation();
                         }
                     };
 
@@ -738,8 +771,9 @@
                             if (angular.isDate(ngModel.$modelValue)) {
                                 date = new Date(ngModel.$modelValue);
                                 date.setFullYear(today.getFullYear(), today.getMonth(), today.getDate());
+                                date.setHours(today.getHours(), today.getMinutes(), today.getSeconds());
                             } else {
-                                date = new Date(today.setHours(0, 0, 0, 0));
+                                date = new Date();
                             }
                         }
                         scope.dateSelection(date);
@@ -763,6 +797,7 @@
                     scope.$on('$destroy', function() {
                         $popup.remove();
                         element.unbind('keydown', keydown);
+                        element.unbind('focus', focus);
                         $document.unbind('click', documentClickBind);
                     });
                 }
@@ -783,4 +818,3 @@
             }
         };
     });
-

@@ -448,14 +448,15 @@ angular.module('ui.bootstrap.datetimepicker', [
             }
         };
     })
-    .directive('dtTimepicker', [
-        function() {
+    .directive('dtTimepicker', ['$timeout',
+        function($timeout) {
             return {
                 restrict: 'EA',
                 require: '^datetimepicker',
                 replace: true,
                 templateUrl: 'template/datetimepicker/time.html',
                 link: function(scope, element, attrs, ctrl) {
+                    var inputs = element.find('input');
                     ctrl.step = {};
                     ctrl.element = element;
 
@@ -469,6 +470,15 @@ angular.module('ui.bootstrap.datetimepicker', [
 
                     ctrl.handleKeyDown = function(key, evt) {
                         if (evt.target.nodeName.toLowerCase() !== 'input') {
+                            if (key == 'left') {
+                                $timeout(function() {
+                                    inputs.last().focus();
+                                });
+                            } else if (key == 'right') {
+                                $timeout(function() {
+                                    inputs.first().focus();
+                                });
+                            }
                             return;
                         }
                         var input = $(evt.target);
@@ -485,9 +495,13 @@ angular.module('ui.bootstrap.datetimepicker', [
                             } else {
                                 scope.time.decrementMinutes();
                             }
+                        } else if (key == 'left' || key == 'right') {
+                            $timeout(function() {
+                                inputs.not(evt.target).focus();
+                            });
                         }
                     };
-                    var inputs = element.find('input');
+                    
                     ctrl.initTime(inputs);
                     ctrl.refreshView();
                 }
@@ -524,7 +538,7 @@ angular.module('ui.bootstrap.datetimepicker', [
     ])
     .constant('datetimepickerPopupConfig', {
         datetimepickerPopup: 'yyyy-MM-dd',
-        currentText: 'Today',
+        currentText: 'Current',
         clearText: 'Clear',
         closeText: 'Done',
         closeOnDateSelection: false,
@@ -532,8 +546,8 @@ angular.module('ui.bootstrap.datetimepicker', [
         showButtonBar: true
     })
     .directive('datetimepickerPopup', [
-        '$compile', '$parse', '$document', '$position', 'dateFilter', 'dateParser', 'datetimepickerPopupConfig',
-        function($compile, $parse, $document, $position, dateFilter, dateParser, datetimepickerPopupConfig) {
+        '$compile', '$parse', '$document', '$position', '$timeout', 'dateFilter', 'dateParser', 'datetimepickerPopupConfig',
+        function($compile, $parse, $document, $position, $timeout, dateFilter, dateParser, datetimepickerPopupConfig) {
             return {
                 restrict: 'EA',
                 require: 'ngModel',
@@ -542,7 +556,8 @@ angular.module('ui.bootstrap.datetimepicker', [
                     currentText: '@',
                     clearText: '@',
                     closeText: '@',
-                    dateDisabled: '&'
+                    dateDisabled: '&',
+                    openOnFocus: '@'
                 },
                 link: function(scope, element, attrs, ngModel) {
                     var dateFormat,
@@ -705,18 +720,36 @@ angular.module('ui.bootstrap.datetimepicker', [
                         }
                     };
 
+                    var canOpenOnFocus = true;
+                    var focus = function(evt) {
+                        if (!canOpenOnFocus) {
+                            canOpenOnFocus = true;
+                            return;
+                        }
+                        $timeout(function() {
+                            scope.isOpen = true;
+                        });
+                    };
+
+                    if (scope.openOnFocus) {
+                        element.bind('focus', focus);
+                    }
+
                     var keydown = function(evt, noApply) {
                         scope.keydown(evt);
                     };
+
                     element.bind('keydown', keydown);
 
                     scope.keydown = function(evt) {
                         if (evt.which === 27) {
+                            canOpenOnFocus = false;
                             evt.preventDefault();
                             evt.stopPropagation();
                             scope.close();
                         } else if (evt.which === 40 && !scope.isOpen) {
                             scope.isOpen = true;
+                            evt.stopPropagation();
                         }
                     };
 
@@ -738,8 +771,9 @@ angular.module('ui.bootstrap.datetimepicker', [
                             if (angular.isDate(ngModel.$modelValue)) {
                                 date = new Date(ngModel.$modelValue);
                                 date.setFullYear(today.getFullYear(), today.getMonth(), today.getDate());
+                                date.setHours(today.getHours(), today.getMinutes(), today.getSeconds());
                             } else {
-                                date = new Date(today.setHours(0, 0, 0, 0));
+                                date = new Date();
                             }
                         }
                         scope.dateSelection(date);
@@ -763,6 +797,7 @@ angular.module('ui.bootstrap.datetimepicker', [
                     scope.$on('$destroy', function() {
                         $popup.remove();
                         element.unbind('keydown', keydown);
+                        element.unbind('focus', focus);
                         $document.unbind('click', documentClickBind);
                     });
                 }
@@ -783,7 +818,6 @@ angular.module('ui.bootstrap.datetimepicker', [
             }
         };
     });
-
 
 angular.module("template/datetimepicker/datetimepicker.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/datetimepicker/datetimepicker.html",
@@ -851,11 +885,11 @@ angular.module("template/datetimepicker/time.html", []).run(["$templateCache", f
     "        </tr>\n" +
     "        <tr>\n" +
     "            <td style=\"width:50px;\"  class=\"form-group\" ng-class=\"{'has-error': time.invalidHours}\">\n" +
-    "                <input type=\"text\" ng-model=\"time.hours\" data-part=\"hour\" ng-change=\"time.updateHours()\" class=\"form-control text-center\" ng-mousewheel=\"time.incrementHours()\" ng-readonly=\"time.readonlyInput\" maxlength=\"2\">\n" +
+    "                <input style=\"width:50px;\" type=\"text\" ng-model=\"time.hours\" data-part=\"hour\" ng-change=\"time.updateHours()\" class=\"form-control text-center\" ng-mousewheel=\"time.incrementHours()\" ng-readonly=\"time.readonlyInput\" maxlength=\"2\">\n" +
     "            </td>\n" +
     "            <td style=\"width:50px;\">:</td>\n" +
     "            <td style=\"width:50px;\" class=\"form-group\" ng-class=\"{'has-error': time.invalidMinutes}\">\n" +
-    "                <input type=\"text\" ng-model=\"time.minutes\" data-part=\"minute\" ng-change=\"time.updateMinutes()\" class=\"form-control text-center\" ng-readonly=\"time.readonlyInput\" maxlength=\"2\">\n" +
+    "                <input style=\"width:50px;\" type=\"text\" ng-model=\"time.minutes\" data-part=\"minute\" ng-change=\"time.updateMinutes()\" class=\"form-control text-center\" ng-readonly=\"time.readonlyInput\" maxlength=\"2\">\n" +
     "            </td>\n" +
     "            <td style=\"width:20px;\">&nbsp;</td>\n" +
     "            <td style=\"width:50px;\" ng-show=\"time.showMeridian\" ><button type=\"button\" class=\"btn btn-primary text-center\" ng-click=\"time.toggleMeridian()\">{{time.meridian}}</button></td>\n" +

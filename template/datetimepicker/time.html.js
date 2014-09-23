@@ -20,11 +20,11 @@ angular.module("template/datetimepicker/time.html", []).run(["$templateCache", f
     "        </tr>\n" +
     "        <tr>\n" +
     "            <td style=\"width:50px;\"  class=\"form-group\" ng-class=\"{'has-error': time.invalidHours}\">\n" +
-    "                <input type=\"text\" ng-model=\"time.hours\" data-part=\"hour\" ng-change=\"time.updateHours()\" class=\"form-control text-center\" ng-mousewheel=\"time.incrementHours()\" ng-readonly=\"time.readonlyInput\" maxlength=\"2\">\n" +
+    "                <input style=\"width:50px;\" type=\"text\" ng-model=\"time.hours\" data-part=\"hour\" ng-change=\"time.updateHours()\" class=\"form-control text-center\" ng-mousewheel=\"time.incrementHours()\" ng-readonly=\"time.readonlyInput\" maxlength=\"2\">\n" +
     "            </td>\n" +
     "            <td style=\"width:50px;\">:</td>\n" +
     "            <td style=\"width:50px;\" class=\"form-group\" ng-class=\"{'has-error': time.invalidMinutes}\">\n" +
-    "                <input type=\"text\" ng-model=\"time.minutes\" data-part=\"minute\" ng-change=\"time.updateMinutes()\" class=\"form-control text-center\" ng-readonly=\"time.readonlyInput\" maxlength=\"2\">\n" +
+    "                <input style=\"width:50px;\" type=\"text\" ng-model=\"time.minutes\" data-part=\"minute\" ng-change=\"time.updateMinutes()\" class=\"form-control text-center\" ng-readonly=\"time.readonlyInput\" maxlength=\"2\">\n" +
     "            </td>\n" +
     "            <td style=\"width:20px;\">&nbsp;</td>\n" +
     "            <td style=\"width:50px;\" ng-show=\"time.showMeridian\" ><button type=\"button\" class=\"btn btn-primary text-center\" ng-click=\"time.toggleMeridian()\">{{time.meridian}}</button></td>\n" +
