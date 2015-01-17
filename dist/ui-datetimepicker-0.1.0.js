@@ -545,6 +545,22 @@ angular.module('ui.bootstrap.datetimepicker', [
         appendToBody: false,
         showButtonBar: true
     })
+    .controller('DatetimepickerPopupInputGroupCtrl', [
+        '$scope', function($scope) {
+            $scope.$dtp = {
+                toggle: function($event, name) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+
+                    if (!this.models[name])
+                        this.models[name] = {};
+
+                    this.models[name].opened = !this.models[name].opened;
+                },
+                models: {}
+            };
+        }
+    ])
     .directive('datetimepickerPopup', [
         '$compile', '$parse', '$document', '$position', '$timeout', 'dateFilter', 'dateParser', 'datetimepickerPopupConfig',
         function($compile, $parse, $document, $position, $timeout, dateFilter, dateParser, datetimepickerPopupConfig) {
@@ -707,9 +723,9 @@ angular.module('ui.bootstrap.datetimepicker', [
 
                     // Outter change
                     ngModel.$render = function() {
-                        var date = ngModel.$viewValue ? dateFilter(ngModel.$viewValue, dateFormat) : '';
-                        element.val(date);
                         scope.date = parseDate(ngModel.$modelValue);
+                        var date = scope.date ? dateFilter(scope.date, dateFormat) : '';
+                        element.val(date);
                     };
 
                     var documentClickBind = function(event) {
@@ -781,7 +797,8 @@ angular.module('ui.bootstrap.datetimepicker', [
 
                     scope.close = function() {
                         scope.isOpen = false;
-                        element[0].focus();
+                        if (!scope.openOnFocus)
+                            element[0].focus();
                     };
 
                     var $popup = $compile(popupEl)(scope);

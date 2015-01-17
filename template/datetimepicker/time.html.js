@@ -3,11 +3,11 @@ angular.module("template/datetimepicker/time.html", []).run(["$templateCache", f
     "<table class=\"text-center\" style=\"margin: 20px;\">\n" +
     "    <thead>\n" +
     "        <tr>\n" +
-    "            <th colspan=\"5\">\n" +
-    "                <div calss=\"text-center\" style=\"padding:10px 9px 2px\">\n" +
-    "                    <a ng-click=\"toggleMode()\" class=\"btn\" style=\"width:100%\"><span class=\"glyphicon glyphicon-calendar\"></span></a>\n" +
+    "            <td colspan=\"5\">\n" +
+    "                <div class=\"text-center\" style=\"padding:10px 9px 2px\">\n" +
+    "                    <a ng-click=\"toggleMode()\" class=\"btn btn-link\" style=\"width:100%\"><span class=\"glyphicon glyphicon-calendar\"></span></a>\n" +
     "                </div>\n" +
-    "            </th>\n" +
+    "            </td>\n" +
     "        </tr>\n" +
     "    </thead>\n" +
     "    <tbody>\n" +

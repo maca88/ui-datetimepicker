@@ -3,9 +3,9 @@ angular.module("template/datetimepicker/day.html", []).run(["$templateCache", fu
     "<table role=\"grid\" aria-labelledby=\"{{uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
     "    <thead>\n" +
     "        <tr>\n" +
-    "            <th><button type=\"button\" class=\"btn btn-default btn-sm pull-left\" ng-click=\"move(-1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-left\"></i></button></th>\n" +
+    "            <th><button type=\"button\" class=\"btn btn-default btn-sm pull-left\" ng-click=\"move(-1)\" tabindex=\"-1\"><span class=\"glyphicon glyphicon-chevron-left\"></span></button></th>\n" +
     "            <th colspan=\"{{5 + showWeeks}}\"><button id=\"{{uniqueId}}-title\" role=\"heading\" aria-live=\"assertive\" aria-atomic=\"true\" type=\"button\" class=\"btn btn-default btn-sm\" ng-click=\"toggleMode()\" tabindex=\"-1\" style=\"width:100%;\"><strong>{{title}}</strong></button></th>\n" +
-    "            <th><button type=\"button\" class=\"btn btn-default btn-sm pull-right\" ng-click=\"move(1)\" tabindex=\"-1\"><i class=\"glyphicon glyphicon-chevron-right\"></i></button></th>\n" +
+    "            <th><button type=\"button\" class=\"btn btn-default btn-sm pull-right\" ng-click=\"move(1)\" tabindex=\"-1\"><span class=\"glyphicon glyphicon-chevron-right\"></span></button></th>\n" +
     "        </tr>\n" +
     "        <tr>\n" +
     "            <th ng-show=\"showWeeks\" class=\"text-center\"></th>\n" +
@@ -22,11 +22,11 @@ angular.module("template/datetimepicker/day.html", []).run(["$templateCache", fu
     "    </tbody>\n" +
     "    <tfoot ng-if=\"showTime\">\n" +
     "        <tr>\n" +
-    "            <th colspan=\"{{7 + showWeeks}}\">\n" +
+    "            <td colspan=\"{{7 + showWeeks}}\">\n" +
     "                <div calss=\"text-center\" style=\"padding:10px 9px 2px\">\n" +
-    "                    <a ng-click=\"toggleMode(-1)\" class=\"btn\" style=\"width:100%\"><span class=\"glyphicon glyphicon-time\"></span></a>\n" +
+    "                    <a ng-click=\"toggleMode(-1)\" class=\"btn btn-link\" style=\"width:100%\"><span class=\"glyphicon glyphicon-time\"></span></a>\n" +
     "                </div>\n" +
-    "            </th>\n" +
+    "            </td>\n" +
     "        </tr>\n" +
     "    </tfoot>\n" +
     "</table>");

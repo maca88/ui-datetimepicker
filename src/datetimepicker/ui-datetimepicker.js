@@ -797,7 +797,8 @@
 
                     scope.close = function() {
                         scope.isOpen = false;
-                        element[0].focus();
+                        if (!scope.openOnFocus)
+                            element[0].focus();
                     };
 
                     var $popup = $compile(popupEl)(scope);
